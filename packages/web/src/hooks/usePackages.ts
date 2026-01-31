@@ -200,11 +200,12 @@ export function useSecurityAudit() {
         createSSEConnection(
           '/security/audit',
           {},
-          (data: AuditSSEData) => {
-            if (data.type === 'progress' && data.message) {
-              addTerminalLog(data.message);
-            } else if (data.type === 'result' && data.data) {
-              result = data.data;
+          (data) => {
+            const auditData = data as AuditSSEData;
+            if (auditData.type === 'progress' && auditData.message) {
+              addTerminalLog(auditData.message);
+            } else if (auditData.type === 'result' && auditData.data) {
+              result = auditData.data;
             }
           },
           () => {
