@@ -12,6 +12,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
 COPY packages/shared/package.json ./packages/shared/
 COPY packages/server/package.json ./packages/server/
 COPY packages/web/package.json ./packages/web/
+COPY packages/cli/package.json ./packages/cli/
 
 # 安装依赖
 RUN pnpm install --frozen-lockfile
