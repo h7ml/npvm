@@ -14,6 +14,7 @@ import type {
   YarnAuditAdvisory,
 } from '@dext7r/npvm-shared';
 import type { PackageManagerAdapter, InstallOptions, UninstallOptions } from './base.js';
+import { validatePackageNames, validateUrl } from '../utils/security.js';
 
 export class YarnAdapter implements PackageManagerAdapter {
   readonly type = 'yarn' as const;
@@ -103,6 +104,12 @@ export class YarnAdapter implements PackageManagerAdapter {
     options?: InstallOptions,
     onProgress?: (progress: OperationProgress) => void
   ): Promise<void> {
+    // 安全验证
+    validatePackageNames(packages);
+    if (options?.registry) {
+      validateUrl(options.registry);
+    }
+
     const args = ['add', ...packages];
     if (options?.dev) args.push('--dev');
     if (options?.registry) args.push('--registry', options.registry);
@@ -149,6 +156,9 @@ export class YarnAdapter implements PackageManagerAdapter {
     options?: UninstallOptions,
     onProgress?: (progress: OperationProgress) => void
   ): Promise<void> {
+    // 安全验证
+    validatePackageNames(packages);
+
     const args = options?.global ? ['global', 'remove', ...packages] : ['remove', ...packages];
 
     const operationId = randomUUID();
@@ -179,6 +189,11 @@ export class YarnAdapter implements PackageManagerAdapter {
     cwd: string,
     onProgress?: (progress: OperationProgress) => void
   ): Promise<void> {
+    // 安全验证
+    if (packages.length > 0) {
+      validatePackageNames(packages);
+    }
+
     const args = packages.length ? ['upgrade', ...packages] : ['upgrade'];
 
     const operationId = randomUUID();
@@ -383,6 +398,8 @@ export class YarnAdapter implements PackageManagerAdapter {
   }
 
   async setRegistry(url: string): Promise<void> {
+    // 安全验证
+    validateUrl(url);
     await execa('yarn', ['config', 'set', 'registry', url]);
   }
 

@@ -13,6 +13,7 @@ import type {
   NpmAuditAdvisory,
 } from '@dext7r/npvm-shared';
 import type { PackageManagerAdapter, InstallOptions, UninstallOptions } from './base.js';
+import { validatePackageNames, validateUrl } from '../utils/security.js';
 
 export class BunAdapter implements PackageManagerAdapter {
   readonly type = 'bun' as const;
@@ -88,6 +89,12 @@ export class BunAdapter implements PackageManagerAdapter {
     options?: InstallOptions,
     onProgress?: (progress: OperationProgress) => void
   ): Promise<void> {
+    // Validate package names
+    validatePackageNames(packages);
+    if (options?.registry) {
+      validateUrl(options.registry);
+    }
+
     const args = ['add', ...packages];
     if (options?.dev) args.push('--dev');
     if (options?.global) args.push('-g');
@@ -134,6 +141,9 @@ export class BunAdapter implements PackageManagerAdapter {
     options?: UninstallOptions,
     onProgress?: (progress: OperationProgress) => void
   ): Promise<void> {
+    // Validate package names
+    validatePackageNames(packages);
+
     const args = ['remove', ...packages];
     if (options?.global) args.push('-g');
 
@@ -165,6 +175,11 @@ export class BunAdapter implements PackageManagerAdapter {
     cwd: string,
     onProgress?: (progress: OperationProgress) => void
   ): Promise<void> {
+    // Validate package names if provided
+    if (packages.length > 0) {
+      validatePackageNames(packages);
+    }
+
     const args = packages.length ? ['update', ...packages] : ['update'];
 
     const operationId = randomUUID();
@@ -382,6 +397,9 @@ export class BunAdapter implements PackageManagerAdapter {
   }
 
   async setRegistry(url: string): Promise<void> {
+    // Validate registry URL
+    validateUrl(url);
+
     // Bun 通过 bunfig.toml 配置 registry
     const { stdout } = await execa('echo', [`registry = "${url}"`]);
     console.warn('Bun registry config:', stdout);

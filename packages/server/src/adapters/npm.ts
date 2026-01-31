@@ -14,6 +14,7 @@ import type {
   NpmAuditAdvisory,
 } from '@dext7r/npvm-shared';
 import type { PackageManagerAdapter, InstallOptions, UninstallOptions } from './base.js';
+import { validatePackageNames, validateUrl } from '../utils/security.js';
 
 export class NpmAdapter implements PackageManagerAdapter {
   readonly type = 'npm' as const;
@@ -85,6 +86,12 @@ export class NpmAdapter implements PackageManagerAdapter {
     options?: InstallOptions,
     onProgress?: (progress: OperationProgress) => void
   ): Promise<void> {
+    // 安全验证：检查包名
+    validatePackageNames(packages);
+    if (options?.registry) {
+      validateUrl(options.registry);
+    }
+
     const args = ['install', ...packages];
     if (options?.dev) args.push('--save-dev');
     if (options?.global) args.push('-g');
@@ -132,6 +139,9 @@ export class NpmAdapter implements PackageManagerAdapter {
     options?: UninstallOptions,
     onProgress?: (progress: OperationProgress) => void
   ): Promise<void> {
+    // 安全验证：检查包名
+    validatePackageNames(packages);
+
     const args = ['uninstall', ...packages];
     if (options?.global) args.push('-g');
 
@@ -163,6 +173,11 @@ export class NpmAdapter implements PackageManagerAdapter {
     cwd: string,
     onProgress?: (progress: OperationProgress) => void
   ): Promise<void> {
+    // 安全验证：检查包名（如果指定了包）
+    if (packages.length > 0) {
+      validatePackageNames(packages);
+    }
+
     const args = packages.length ? ['update', ...packages] : ['update'];
 
     const operationId = randomUUID();
@@ -355,6 +370,8 @@ export class NpmAdapter implements PackageManagerAdapter {
   }
 
   async setRegistry(url: string): Promise<void> {
+    // 安全验证：检查 URL 格式
+    validateUrl(url);
     await execa('npm', ['config', 'set', 'registry', url]);
   }
 

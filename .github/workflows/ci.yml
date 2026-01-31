@@ -129,3 +129,6 @@ jobs:
       - name: Run tests
         run: pnpm test
         continue-on-error: true
+      
+      - name: Install packages
+        run: node ./script/api_install.js  
