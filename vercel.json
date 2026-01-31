@@ -5,12 +5,13 @@
   "installCommand": "pnpm install",
   "framework": "vite",
   "functions": {
-    "api/remote/analyze.ts": {
+    "api/**/*.ts": {
+      "runtime": "@vercel/node@3",
       "maxDuration": 30
     }
   },
   "rewrites": [
-    { "source": "/api/remote/analyze", "destination": "/api/remote/analyze" },
+    { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/((?!api|assets).*)", "destination": "/index.html" }
   ]
 }
