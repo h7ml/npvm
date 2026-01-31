@@ -24,7 +24,7 @@ export class NpmAdapter implements PackageManagerAdapter {
   async detect(): Promise<PackageManagerInfo> {
     try {
       const path = await which('npm');
-      const { stdout } = await execa('npm', ['--version']);
+      const { stdout } = await execa('npm', ['--version'], { timeout: 5000 });
       return {
         type: 'npm',
         version: stdout.trim(),

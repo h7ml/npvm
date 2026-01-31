@@ -48,7 +48,8 @@
     "test": "turbo test",
     "clean": "turbo clean && rm -rf node_modules",
     "typecheck": "turbo typecheck",
-    "prepare": "echo 'Ready'"
+    "prepare": "echo 'Ready'",
+    "publish:packages": "pnpm build && pnpm -r publish --access public --no-git-checks"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

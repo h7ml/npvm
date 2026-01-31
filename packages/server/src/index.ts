@@ -8,7 +8,6 @@ import { dirname, join, resolve } from 'path';
 import { existsSync } from 'fs';
 import type { PackageManagerType } from '@dext7r/npvm-shared';
 import { registerRoutes } from './routes/api.js';
-import { registerSeoRoutes } from './routes/seo.js';
 import { detectAllPackageManagers } from './adapters/index.js';
 import { getLandingPage } from './landing.js';
 
@@ -115,9 +114,6 @@ export async function createServer(options: ServerOptions = {}) {
       reply.type('text/html').send(getLandingPage(port));
     });
   }
-
-  // 注册 SEO 路由 (sitemap, rss, atom, robots.txt) - 在静态文件之后注册以覆盖静态文件处理
-  await registerSeoRoutes(app);
 
   return { app, port, host };
 }

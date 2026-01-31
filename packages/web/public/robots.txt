@@ -7,3 +7,4 @@ Sitemap: https://npvm.zeabur.app/sitemap.xml
 
 # Disallow API endpoints
 Disallow: /api/
+Disallow: /docs/

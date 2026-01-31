@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "node ../../script/generate-seo.js && tsc && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",

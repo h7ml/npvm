@@ -24,7 +24,7 @@ export class YarnAdapter implements PackageManagerAdapter {
   async detect(): Promise<PackageManagerInfo> {
     try {
       const path = await which('yarn');
-      const { stdout } = await execa('yarn', ['--version']);
+      const { stdout } = await execa('yarn', ['--version'], { timeout: 5000 });
       return {
         type: 'yarn',
         version: stdout.trim(),

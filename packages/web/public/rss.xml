@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>npvm - Node Package Manager Visual Platform</title>
+    <link>https://npvm.zeabur.app</link>
+    <description>A modern visual platform for managing Node.js packages. Supports npm, yarn, pnpm, and bun.</description>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 31 Jan 2026 19:01:50 GMT</lastBuildDate>
+    <atom:link href="https://npvm.zeabur.app/rss.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title>0.2.0: Version check - compare local build with GitHub latest commit</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Version check - compare local build with GitHub latest commit</description>
+      <pubDate>Sun, 01 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.2.0-0</guid>
+    </item>
+    <item>
+      <title>0.2.0: Package detail modal with fullscreen toggle support</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Package detail modal with fullscreen toggle support</description>
+      <pubDate>Sun, 01 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.2.0-1</guid>
+    </item>
+    <item>
+      <title>0.2.0: Import dependencies from package.json (local file or URL)</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Import dependencies from package.json (local file or URL)</description>
+      <pubDate>Sun, 01 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.2.0-2</guid>
+    </item>
+    <item>
+      <title>0.2.0: Clickable sidebar title to navigate to dashboard</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Clickable sidebar title to navigate to dashboard</description>
+      <pubDate>Sun, 01 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.2.0-3</guid>
+    </item>
+    <item>
+      <title>0.2.0: Dynamic SEO routes (sitemap.xml, rss.xml, atom.xml, robots.txt)</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Dynamic SEO routes (sitemap.xml, rss.xml, atom.xml, robots.txt)</description>
+      <pubDate>Sun, 01 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.2.0-4</guid>
+    </item>
+    <item>
+      <title>0.2.0: Page-level SEO meta tags with route-based updates</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Page-level SEO meta tags with route-based updates</description>
+      <pubDate>Sun, 01 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.2.0-5</guid>
+    </item>
+    <item>
+      <title>0.2.0: Deployment guide with multiple platform demos</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Deployment guide with multiple platform demos</description>
+      <pubDate>Sun, 01 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.2.0-6</guid>
+    </item>
+    <item>
+      <title>0.2.0: FAQ section in documentation</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>FAQ section in documentation</description>
+      <pubDate>Sun, 01 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.2.0-7</guid>
+    </item>
+    <item>
+      <title>0.2.0: Refresh button spin animation when fetching packages</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Refresh button spin animation when fetching packages</description>
+      <pubDate>Sun, 01 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.2.0-8</guid>
+    </item>
+    <item>
+      <title>0.2.0: Enhanced documentation with new features and deployment guide</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Enhanced documentation with new features and deployment guide</description>
+      <pubDate>Sun, 01 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.2.0-9</guid>
+    </item>
+    <item>
+      <title>0.2.0: Updated i18n translations for all new features</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Updated i18n translations for all new features</description>
+      <pubDate>Sun, 01 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.2.0-10</guid>
+    </item>
+    <item>
+      <title>0.2.0: Fixed component creation during render in RepoInfoCard</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Fixed component creation during render in RepoInfoCard</description>
+      <pubDate>Sun, 01 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.2.0-11</guid>
+    </item>
+    <item>
+      <title>0.2.0: Fixed animation state management in ConfirmDialog</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Fixed animation state management in ConfirmDialog</description>
+      <pubDate>Sun, 01 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.2.0-12</guid>
+    </item>
+    <item>
+      <title>0.1.0: Dashboard with package manager overview</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Dashboard with package manager overview</description>
+      <pubDate>Sat, 31 Jan 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.1.0-0</guid>
+    </item>
+    <item>
+      <title>0.1.0: Package management (install/uninstall/update) with batch support</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Package management (install/uninstall/update) with batch support</description>
+      <pubDate>Sat, 31 Jan 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.1.0-1</guid>
+    </item>
+    <item>
+      <title>0.1.0: Dependency tree visualization with circular dependency detection</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Dependency tree visualization with circular dependency detection</description>
+      <pubDate>Sat, 31 Jan 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.1.0-2</guid>
+    </item>
+    <item>
+      <title>0.1.0: Security vulnerability scanning via OSV API</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Security vulnerability scanning via OSV API</description>
+      <pubDate>Sat, 31 Jan 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.1.0-3</guid>
+    </item>
+    <item>
+      <title>0.1.0: Remote analysis for npm packages and GitHub/GitLab repos</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Remote analysis for npm packages and GitHub/GitLab repos</description>
+      <pubDate>Sat, 31 Jan 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.1.0-4</guid>
+    </item>
+    <item>
+      <title>0.1.0: Multi-registry support (npm, taobao, tencent, etc.)</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Multi-registry support (npm, taobao, tencent, etc.)</description>
+      <pubDate>Sat, 31 Jan 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.1.0-5</guid>
+    </item>
+    <item>
+      <title>0.1.0: Shareable URL for remote analysis results</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Shareable URL for remote analysis results</description>
+      <pubDate>Sat, 31 Jan 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.1.0-6</guid>
+    </item>
+    <item>
+      <title>0.1.0: Reusable UI component library (Button, Card, Badge, etc.)</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Reusable UI component library (Button, Card, Badge, etc.)</description>
+      <pubDate>Sat, 31 Jan 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.1.0-7</guid>
+    </item>
+    <item>
+      <title>0.1.0: Dark mode and i18n (English / Chinese)</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Dark mode and i18n (English / Chinese)</description>
+      <pubDate>Sat, 31 Jan 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.1.0-8</guid>
+    </item>
+    <item>
+      <title>0.1.0: CLI entry point with customizable port and project path</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>CLI entry point with customizable port and project path</description>
+      <pubDate>Sat, 31 Jan 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.1.0-9</guid>
+    </item>
+    <item>
+      <title>0.1.0: Changelog page with timeline view</title>
+      <link>https://npvm.zeabur.app/changelog</link>
+      <description>Changelog page with timeline view</description>
+      <pubDate>Sat, 31 Jan 2026 00:00:00 GMT</pubDate>
+      <guid>https://npvm.zeabur.app/changelog#0.1.0-10</guid>
+    </item>
+  </channel>
+</rss>

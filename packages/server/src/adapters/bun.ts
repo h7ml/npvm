@@ -23,7 +23,7 @@ export class BunAdapter implements PackageManagerAdapter {
   async detect(): Promise<PackageManagerInfo> {
     try {
       const path = await which('bun');
-      const { stdout } = await execa('bun', ['--version']);
+      const { stdout } = await execa('bun', ['--version'], { timeout: 5000 });
       return {
         type: 'bun',
         version: stdout.trim(),

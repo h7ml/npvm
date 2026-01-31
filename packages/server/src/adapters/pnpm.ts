@@ -23,7 +23,7 @@ export class PnpmAdapter implements PackageManagerAdapter {
   async detect(): Promise<PackageManagerInfo> {
     try {
       const path = await which('pnpm');
-      const { stdout } = await execa('pnpm', ['--version']);
+      const { stdout } = await execa('pnpm', ['--version'], { timeout: 5000 });
       return {
         type: 'pnpm',
         version: stdout.trim(),
