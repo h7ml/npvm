@@ -15,6 +15,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Filter,
+  ArrowUpDown,
+  ArrowUpIcon,
+  ArrowDownIcon,
 } from 'lucide-react';
 import {
   useInstalledPackages,
@@ -30,10 +33,20 @@ import { Card, Button, Badge, EmptyState, Select } from '../ui';
 import { clsx } from 'clsx';
 import type { InstalledPackage } from '@dext7r/npvm-shared';
 
+type SortField = 'name' | 'version' | 'type';
+type SortDirection = 'asc' | 'desc';
+
 const PAGE_SIZE_OPTIONS = [
+  { value: '10', label: '10' },
   { value: '20', label: '20' },
   { value: '50', label: '50' },
   { value: '100', label: '100' },
+  { value: '200', label: '200' },
+  { value: '500', label: '500' },
+  { value: '1000', label: '1000' },
+  { value: '2000', label: '2000' },
+  { value: '5000', label: '5000' },
+  { value: '10000', label: '10000' },
 ];
 
 const ROW_HEIGHT = 52;
@@ -47,6 +60,8 @@ export function PackageList() {
   const [installAsDev, setInstallAsDev] = useState(false);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
+  const [sortField, setSortField] = useState<SortField>('name');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean;
     type: 'uninstall' | 'updateAll';
@@ -87,12 +102,33 @@ export function PackageList() {
     return packages.filter((pkg) => pkg.name.toLowerCase().includes(query));
   }, [packages, filterQuery]);
 
+  // 排序
+  const sortedPackages = useMemo(() => {
+    const sorted = [...filteredPackages];
+    sorted.sort((a, b) => {
+      let comparison = 0;
+      switch (sortField) {
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'version':
+          comparison = a.version.localeCompare(b.version);
+          break;
+        case 'type':
+          comparison = (a.isDev ? 1 : 0) - (b.isDev ? 1 : 0);
+          break;
+      }
+      return sortDirection === 'asc' ? comparison : -comparison;
+    });
+    return sorted;
+  }, [filteredPackages, sortField, sortDirection]);
+
   // 分页
-  const totalPages = Math.ceil(filteredPackages.length / pageSize);
+  const totalPages = Math.ceil(sortedPackages.length / pageSize);
   const paginatedPackages = useMemo(() => {
     const start = (page - 1) * pageSize;
-    return filteredPackages.slice(start, start + pageSize);
-  }, [filteredPackages, page, pageSize]);
+    return sortedPackages.slice(start, start + pageSize);
+  }, [sortedPackages, page, pageSize]);
 
   // 虚拟滚动
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -112,6 +148,27 @@ export function PackageList() {
   const handlePageSizeChange = (value: string) => {
     setPageSize(Number(value));
     setPage(1);
+  };
+
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+    setPage(1);
+  };
+
+  const SortIcon = ({ field }: { field: SortField }) => {
+    if (sortField !== field) {
+      return <ArrowUpDown size={14} className="text-gray-400" />;
+    }
+    return sortDirection === 'asc' ? (
+      <ArrowUpIcon size={14} className="text-primary-500" />
+    ) : (
+      <ArrowDownIcon size={14} className="text-primary-500" />
+    );
   };
 
   const handleInstall = async (name: string, dev = false) => {
@@ -226,7 +283,7 @@ export function PackageList() {
   };
 
   const startItem = (page - 1) * pageSize + 1;
-  const endItem = Math.min(page * pageSize, filteredPackages.length);
+  const endItem = Math.min(page * pageSize, sortedPackages.length);
 
   return (
     <div className="space-y-4">
@@ -359,7 +416,7 @@ export function PackageList() {
           </div>
           <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
             <span>
-              {t('packages.showing', { start: startItem, end: endItem, total: filteredPackages.length })}
+              {t('packages.showing', { start: startItem, end: endItem, total: sortedPackages.length })}
             </span>
             <Select
               value={String(pageSize)}
@@ -405,9 +462,27 @@ export function PackageList() {
           <>
             {/* Table Header */}
             <div className="flex items-center px-4 py-3 bg-gray-50 dark:bg-gray-700/50 text-sm font-medium text-gray-500 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex-1">{t('packages.name')}</div>
-              <div className="w-32">{t('packages.version')}</div>
-              <div className="w-20">{t('packages.type')}</div>
+              <button
+                onClick={() => handleSort('name')}
+                className="flex-1 flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-200 transition-colors text-left"
+              >
+                {t('packages.name')}
+                <SortIcon field="name" />
+              </button>
+              <button
+                onClick={() => handleSort('version')}
+                className="w-32 flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+              >
+                {t('packages.version')}
+                <SortIcon field="version" />
+              </button>
+              <button
+                onClick={() => handleSort('type')}
+                className="w-20 flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+              >
+                {t('packages.type')}
+                <SortIcon field="type" />
+              </button>
               <div className="w-24 text-right">{t('packages.actions')}</div>
             </div>
 

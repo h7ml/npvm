@@ -19,6 +19,8 @@ import {
   Star,
   GitFork,
   CircleDot,
+  Clock,
+  X,
   type LucideIcon,
 } from 'lucide-react';
 import { Card, Button, Badge, Spinner } from '../components/ui';
@@ -51,7 +53,18 @@ interface NavItem {
 export function Settings() {
   const { t, i18n } = useTranslation();
   const { addToast } = useToast();
-  const { projectPath, setProjectPath, currentRegistry, setCurrentRegistry, themeMode, setThemeMode, currentPm } = useAppStore();
+  const {
+    projectPath,
+    setProjectPath,
+    projectPathHistory,
+    removeProjectPathFromHistory,
+    clearProjectPathHistory,
+    currentRegistry,
+    setCurrentRegistry,
+    themeMode,
+    setThemeMode,
+    currentPm,
+  } = useAppStore();
   const [activeSection, setActiveSection] = useState('connection');
   const [localPath, setLocalPath] = useState(projectPath);
   const [registryStatuses, setRegistryStatuses] = useState<Record<string, boolean>>({});
@@ -316,6 +329,68 @@ export function Settings() {
                 </Button>
               </div>
             </div>
+
+            {/* 项目路径历史记录 */}
+            {projectPathHistory.length > 0 && (
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                    <Clock size={16} />
+                    {t('common.recentProjects')}
+                  </h4>
+                  <button
+                    onClick={clearProjectPathHistory}
+                    className="text-xs text-gray-400 hover:text-red-500 flex items-center gap-1 transition-colors"
+                  >
+                    <Trash2 size={12} />
+                    {t('common.clear')}
+                  </button>
+                </div>
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {projectPathHistory.map((item) => (
+                    <div
+                      key={item.path}
+                      className={clsx(
+                        'group flex items-center gap-3 p-3 rounded-lg border transition-colors cursor-pointer',
+                        projectPath === item.path
+                          ? 'border-primary-300 dark:border-primary-600 bg-primary-50 dark:bg-primary-900/20'
+                          : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                      )}
+                      onClick={() => {
+                        setLocalPath(item.path);
+                        setProjectPath(item.path);
+                      }}
+                    >
+                      <FolderOpen size={16} className="text-gray-400 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-mono text-sm text-gray-700 dark:text-gray-200 truncate" title={item.path}>
+                          {item.path}
+                        </div>
+                        <div className="text-xs text-gray-400 mt-0.5">
+                          {new Date(item.timestamp).toLocaleString()}
+                        </div>
+                      </div>
+                      {projectPath === item.path && (
+                        <Badge variant="success" size="sm">
+                          <Check size={10} className="mr-1" />
+                          {t('common.active')}
+                        </Badge>
+                      )}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeProjectPathFromHistory(item.path);
+                        }}
+                        className="p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-400 hover:text-red-500 transition-all"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <FolderPicker
               isOpen={folderPickerOpen}
               onClose={() => setFolderPickerOpen(false)}
