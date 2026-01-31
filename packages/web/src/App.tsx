@@ -6,6 +6,7 @@ import { Dependencies } from './pages/Dependencies';
 import { Security } from './pages/Security';
 import { Settings } from './pages/Settings';
 import { RemoteAnalysis } from './pages/RemoteAnalysis';
+import { Docs } from './pages/Docs';
 import { useEffect } from 'react';
 import { useAppStore } from './stores/app';
 import { ToastProvider } from './components/ui/Toast';
@@ -27,6 +28,7 @@ export default function App() {
             <Route path="dependencies" element={<Dependencies />} />
             <Route path="security" element={<Security />} />
             <Route path="remote" element={<RemoteAnalysis />} />
+            <Route path="docs" element={<Docs />} />
             <Route path="settings" element={<Settings />} />
           </Route>
         </Routes>

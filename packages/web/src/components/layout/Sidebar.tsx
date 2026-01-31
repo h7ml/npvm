@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Globe,
+  BookOpen,
 } from 'lucide-react';
 import { useAppStore } from '../../stores/app';
 import { clsx } from 'clsx';
@@ -23,6 +24,7 @@ export function Sidebar() {
     { path: '/dependencies', icon: GitBranch, label: t('nav.dependencies') },
     { path: '/security', icon: Shield, label: t('nav.security') },
     { path: '/remote', icon: Globe, label: t('nav.remote') },
+    { path: '/docs', icon: BookOpen, label: t('nav.docs') },
     { path: '/settings', icon: Settings, label: t('nav.settings') },
   ];
 
