@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import {
   Globe,
   Search,
@@ -15,6 +16,7 @@ import {
   ExternalLink,
   Copy,
   Check,
+  Share2,
 } from 'lucide-react';
 import { useRemoteAnalysis } from '../hooks/usePackages';
 import { useToast } from '../components/ui/Toast';
@@ -109,26 +111,76 @@ const QUICK_PACKAGES = ['lodash', 'react', 'vue', 'express', 'axios', 'next'];
 export function RemoteAnalysis() {
   const { t } = useTranslation();
   const { addToast } = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [repoUrl, setRepoUrl] = useState('');
   const [branch, setBranch] = useState('main');
   const [result, setResult] = useState<RemoteAnalysisResult | null>(null);
   const [copiedPm, setCopiedPm] = useState<string | null>(null);
+  const [copiedShare, setCopiedShare] = useState(false);
   const analysisMutation = useRemoteAnalysis();
 
   const isNpmSource = result?.sourceType === 'npm';
 
-  const handleAnalyze = async (input?: string) => {
+  const handleAnalyze = useCallback(async (input?: string, branchParam?: string) => {
     const target = input || repoUrl;
     if (!target.trim()) return;
     if (input) setRepoUrl(input);
+    if (branchParam) setBranch(branchParam);
     try {
       const data = await analysisMutation.mutateAsync({
         repoUrl: target.trim(),
-        branch: branch.trim() || undefined,
+        branch: (branchParam || branch).trim() || undefined,
       });
       setResult(data);
+      // 更新 URL 参数
+      const params = new URLSearchParams();
+      params.set('q', target.trim());
+      if ((branchParam || branch) && (branchParam || branch) !== 'main') {
+        params.set('branch', (branchParam || branch).trim());
+      }
+      setSearchParams(params, { replace: true });
     } catch {
       setResult(null);
+    }
+  }, [repoUrl, branch, analysisMutation, setSearchParams]);
+
+  // 从 URL 参数初始化
+  useEffect(() => {
+    const q = searchParams.get('q');
+    const branchParam = searchParams.get('branch');
+    if (q && !result && !analysisMutation.isPending) {
+      setRepoUrl(q);
+      if (branchParam) setBranch(branchParam);
+      handleAnalyze(q, branchParam || undefined);
+    }
+  }, []);
+
+  const generateShareUrl = () => {
+    const params = new URLSearchParams();
+    params.set('q', repoUrl.trim());
+    if (branch && branch !== 'main') {
+      params.set('branch', branch.trim());
+    }
+    return `${window.location.origin}/remote?${params.toString()}`;
+  };
+
+  const handleCopyShareUrl = async () => {
+    if (!repoUrl.trim()) return;
+    try {
+      await navigator.clipboard.writeText(generateShareUrl());
+      setCopiedShare(true);
+      setTimeout(() => setCopiedShare(false), 2000);
+      addToast({
+        type: 'success',
+        title: t('remote.shareSuccess'),
+        duration: 2000,
+      });
+    } catch {
+      addToast({
+        type: 'error',
+        title: t('remote.copyFailed'),
+        duration: 3000,
+      });
     }
   };
 
@@ -224,6 +276,20 @@ export function RemoteAnalysis() {
               </>
             )}
           </button>
+          {result && (
+            <button
+              onClick={handleCopyShareUrl}
+              className={clsx(
+                'flex items-center justify-center gap-2 px-3 py-2 rounded-lg border transition-colors',
+                copiedShare
+                  ? 'bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700 text-green-600 dark:text-green-400'
+                  : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+              )}
+              title={t('remote.share')}
+            >
+              {copiedShare ? <Check size={18} /> : <Share2 size={18} />}
+            </button>
+          )}
         </div>
 
         <div className="flex flex-wrap gap-2 mt-3">

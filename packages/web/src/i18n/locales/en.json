@@ -112,6 +112,8 @@
     "copySuccess": "Copied!",
     "commandCopied": "command copied to clipboard",
     "copyFailed": "Copy failed",
+    "share": "Share",
+    "shareSuccess": "Share link copied!",
     "npmAuthor": "Author",
     "npmLicense": "License"
   },
