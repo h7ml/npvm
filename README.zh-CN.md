@@ -14,7 +14,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18-61dafb)](https://react.dev/)
 
-**[在线演示](https://npvm.zeabur.app)** | **[API 服务](https://npvm-server.zeabur.app)**
+**[在线演示](https://npvm.zeabur.app)** | **[API 文档](https://npvm.zeabur.app/docs)**
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
