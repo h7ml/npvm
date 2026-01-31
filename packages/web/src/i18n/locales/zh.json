@@ -86,8 +86,8 @@
     "noOutput": "暂无输出..."
   },
   "remote": {
-    "title": "远程仓库分析",
-    "urlPlaceholder": "输入 GitHub/GitLab 仓库地址...",
+    "title": "远程分析",
+    "urlPlaceholder": "npm 包名、npmjs 地址或 GitHub/GitLab 仓库地址...",
     "branchPlaceholder": "分支",
     "analyze": "分析",
     "analyzing": "分析中...",
@@ -97,12 +97,14 @@
     "updates": "可更新",
     "noLockFile": "未找到 lock 文件",
     "noUpdates": "所有包均为最新版本",
-    "hint": "输入 GitHub 或 GitLab 仓库地址以分析其依赖",
-    "error": "分析仓库失败",
+    "hint": "输入 npm 包名（如 lodash）、npmjs.com 地址或 GitHub/GitLab 仓库地址以分析依赖",
+    "error": "分析失败",
     "copyCommand": "复制更新命令",
     "copySuccess": "已复制！",
     "commandCopied": "命令已复制到剪贴板",
-    "copyFailed": "复制失败"
+    "copyFailed": "复制失败",
+    "npmAuthor": "作者",
+    "npmLicense": "许可证"
   },
   "docs": {
     "title": "使用文档",

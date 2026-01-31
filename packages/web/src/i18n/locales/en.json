@@ -86,8 +86,8 @@
     "noOutput": "No output yet..."
   },
   "remote": {
-    "title": "Remote Repository Analysis",
-    "urlPlaceholder": "Enter GitHub/GitLab repository URL...",
+    "title": "Remote Analysis",
+    "urlPlaceholder": "npm package name, npmjs URL, or GitHub/GitLab URL...",
     "branchPlaceholder": "Branch",
     "analyze": "Analyze",
     "analyzing": "Analyzing...",
@@ -97,12 +97,14 @@
     "updates": "Updates Available",
     "noLockFile": "No lock file found",
     "noUpdates": "All packages are up to date",
-    "hint": "Enter a GitHub or GitLab repository URL to analyze its dependencies",
-    "error": "Failed to analyze repository",
+    "hint": "Enter an npm package name (e.g. lodash), npmjs.com URL, or GitHub/GitLab URL to analyze dependencies",
+    "error": "Failed to analyze",
     "copyCommand": "Copy update command",
     "copySuccess": "Copied!",
     "commandCopied": "command copied to clipboard",
-    "copyFailed": "Copy failed"
+    "copyFailed": "Copy failed",
+    "npmAuthor": "Author",
+    "npmLicense": "License"
   },
   "docs": {
     "title": "Documentation",

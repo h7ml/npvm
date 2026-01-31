@@ -5,10 +5,50 @@ import type {
   DependencyNode,
   VulnerabilityInfo,
   RemoteAnalysisResult,
+  NpmPackageMeta,
 } from '@dext7r/npvm-shared';
 
 const NPM_REGISTRY = 'https://registry.npmjs.org';
 const OSV_API = 'https://api.osv.dev/v1/querybatch';
+
+// 镜像源站点到 registry URL 映射
+const NPM_SITE_REGISTRY_MAP: Record<string, string> = {
+  'npmjs.com': 'https://registry.npmjs.org',
+  'www.npmjs.com': 'https://registry.npmjs.org',
+  'npmmirror.com': 'https://registry.npmmirror.com',
+  'npm.taobao.org': 'https://registry.npmmirror.com',
+  'yarnpkg.com': 'https://registry.yarnpkg.com',
+};
+
+// 输入类型
+type InputType = 'npm-package' | 'npm-site-url' | 'git-url';
+
+// 解析输入类型
+export function parseInputType(input: string): { type: InputType; value: string; registry?: string } {
+  const trimmed = input.trim();
+
+  // 检测 npm 站点 URL
+  for (const [domain, registry] of Object.entries(NPM_SITE_REGISTRY_MAP)) {
+    const urlPattern = new RegExp(`^https?:\\/\\/${domain.replace('.', '\\.')}\\/package\\/(.+)$`);
+    const match = trimmed.match(urlPattern);
+    if (match) {
+      return { type: 'npm-site-url', value: match[1], registry };
+    }
+  }
+
+  // 检测 Git URL (http/https/git@)
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('git@')) {
+    return { type: 'git-url', value: trimmed };
+  }
+
+  // 其他情况视为 npm 包名 (lodash, @scope/package)
+  if (/^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/i.test(trimmed)) {
+    return { type: 'npm-package', value: trimmed };
+  }
+
+  // 默认尝试作为 Git URL 处理
+  return { type: 'git-url', value: trimmed };
+}
 
 // 解析 Git URL
 export function parseGitUrl(url: string): RemoteRepoInfo {
@@ -396,31 +436,60 @@ export async function checkUpdates(
   return results;
 }
 
-// 完整分析远程仓库
-export async function analyzeRemoteRepo(repoUrl: string, branch?: string): Promise<RemoteAnalysisResult> {
-  // 解析 Git URL
-  const repoInfo = parseGitUrl(repoUrl);
-  if (branch) repoInfo.branch = branch;
+// 从 npm registry 获取包信息
+async function fetchNpmPackageInfo(
+  packageName: string,
+  registry: string = NPM_REGISTRY
+): Promise<{ meta: NpmPackageMeta; dependencies: Record<string, string>; devDependencies: Record<string, string> }> {
+  const url = `${registry}/${encodeURIComponent(packageName)}`;
+  const response = await fetch(url, {
+    headers: { Accept: 'application/json', 'User-Agent': 'NPVM-Remote-Analyzer' },
+  });
 
-  // 获取 package.json
-  const packageJsonContent = await fetchRepoFile(repoInfo, 'package.json');
-  if (!packageJsonContent) {
-    throw new Error('package.json not found in repository');
+  if (!response.ok) {
+    throw new Error(`Package not found: ${packageName}`);
   }
 
-  // 解析 package.json
-  const { dependencies, devDependencies } = parsePackageJson(packageJsonContent);
+  const data = await response.json();
+  const latestVersion = data['dist-tags']?.latest;
+  const latestInfo = data.versions?.[latestVersion] || {};
+
+  const meta: NpmPackageMeta = {
+    name: data.name,
+    version: latestVersion || '0.0.0',
+    description: data.description,
+    author: typeof data.author === 'string' ? data.author : data.author?.name,
+    license: data.license,
+    homepage: data.homepage,
+    repository: typeof data.repository === 'string' ? data.repository : data.repository?.url,
+    keywords: data.keywords,
+  };
+
+  return {
+    meta,
+    dependencies: latestInfo.dependencies || {},
+    devDependencies: latestInfo.devDependencies || {},
+  };
+}
+
+// 分析 npm 包
+async function analyzeNpmPackage(
+  packageName: string,
+  registry: string = NPM_REGISTRY
+): Promise<RemoteAnalysisResult> {
+  const { meta, dependencies, devDependencies } = await fetchNpmPackageInfo(packageName, registry);
   const packages = extractPackages(dependencies, devDependencies);
 
-  // 检测并解析 lock 文件
-  let dependencyTree: DependencyNode | null = null;
-  let lockFileType: 'npm' | 'yarn' | 'pnpm' | undefined;
-
-  const lockFile = await detectLockFileType(repoInfo);
-  if (lockFile) {
-    lockFileType = lockFile.type;
-    dependencyTree = parseLockFile(lockFile.content, lockFile.type);
-  }
+  // 构建简单依赖树 (仅一层深度)
+  const dependencyTree: DependencyNode = {
+    name: meta.name,
+    version: meta.version,
+    children: packages.filter((p) => !p.isDev).map((p) => ({
+      name: p.name,
+      version: p.version,
+      children: [],
+    })),
+  };
 
   // 并行执行漏洞检查和更新检查
   const packagesForCheck = packages.slice(0, 50).map((p) => ({ name: p.name, version: p.version }));
@@ -431,6 +500,46 @@ export async function analyzeRemoteRepo(repoUrl: string, branch?: string): Promi
   ]);
 
   return {
+    sourceType: 'npm',
+    packageMeta: meta,
+    packages,
+    dependencyTree,
+    vulnerabilities,
+    updates,
+  };
+}
+
+// 分析 Git 仓库
+async function analyzeGitRepo(repoUrl: string, branch?: string): Promise<RemoteAnalysisResult> {
+  const repoInfo = parseGitUrl(repoUrl);
+  if (branch) repoInfo.branch = branch;
+
+  const packageJsonContent = await fetchRepoFile(repoInfo, 'package.json');
+  if (!packageJsonContent) {
+    throw new Error('package.json not found in repository');
+  }
+
+  const { dependencies, devDependencies } = parsePackageJson(packageJsonContent);
+  const packages = extractPackages(dependencies, devDependencies);
+
+  let dependencyTree: DependencyNode | null = null;
+  let lockFileType: 'npm' | 'yarn' | 'pnpm' | undefined;
+
+  const lockFile = await detectLockFileType(repoInfo);
+  if (lockFile) {
+    lockFileType = lockFile.type;
+    dependencyTree = parseLockFile(lockFile.content, lockFile.type);
+  }
+
+  const packagesForCheck = packages.slice(0, 50).map((p) => ({ name: p.name, version: p.version }));
+
+  const [vulnerabilities, updates] = await Promise.all([
+    checkVulnerabilities(packagesForCheck),
+    checkUpdates(packagesForCheck),
+  ]);
+
+  return {
+    sourceType: 'git',
     repoInfo,
     packages,
     dependencyTree,
@@ -438,4 +547,18 @@ export async function analyzeRemoteRepo(repoUrl: string, branch?: string): Promi
     updates,
     lockFileType,
   };
+}
+
+// 统一入口：分析远程仓库或 npm 包
+export async function analyzeRemoteRepo(input: string, branch?: string): Promise<RemoteAnalysisResult> {
+  const parsed = parseInputType(input);
+
+  switch (parsed.type) {
+    case 'npm-package':
+    case 'npm-site-url':
+      return analyzeNpmPackage(parsed.value, parsed.registry);
+    case 'git-url':
+    default:
+      return analyzeGitRepo(parsed.value, branch);
+  }
 }

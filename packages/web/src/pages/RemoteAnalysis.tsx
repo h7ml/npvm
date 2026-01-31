@@ -104,20 +104,26 @@ function VulnerabilityCard({ vuln }: { vuln: VulnerabilityInfo }) {
   );
 }
 
+const QUICK_PACKAGES = ['lodash', 'react', 'vue', 'express', 'axios', 'next'];
+
 export function RemoteAnalysis() {
   const { t } = useTranslation();
   const { addToast } = useToast();
-  const [repoUrl, setRepoUrl] = useState('https://github.com/h7ml/NPVM');
+  const [repoUrl, setRepoUrl] = useState('');
   const [branch, setBranch] = useState('main');
   const [result, setResult] = useState<RemoteAnalysisResult | null>(null);
   const [copiedPm, setCopiedPm] = useState<string | null>(null);
   const analysisMutation = useRemoteAnalysis();
 
-  const handleAnalyze = async () => {
-    if (!repoUrl.trim()) return;
+  const isNpmSource = result?.sourceType === 'npm';
+
+  const handleAnalyze = async (input?: string) => {
+    const target = input || repoUrl;
+    if (!target.trim()) return;
+    if (input) setRepoUrl(input);
     try {
       const data = await analysisMutation.mutateAsync({
-        repoUrl: repoUrl.trim(),
+        repoUrl: target.trim(),
         branch: branch.trim() || undefined,
       });
       setResult(data);
@@ -184,22 +190,25 @@ export function RemoteAnalysis() {
                 type="text"
                 value={repoUrl}
                 onChange={(e) => setRepoUrl(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleAnalyze()}
                 placeholder={t('remote.urlPlaceholder')}
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               />
             </div>
           </div>
-          <div className="w-full sm:w-32">
-            <input
-              type="text"
-              value={branch}
-              onChange={(e) => setBranch(e.target.value)}
-              placeholder={t('remote.branchPlaceholder')}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            />
-          </div>
+          {!isNpmSource && (
+            <div className="w-full sm:w-32">
+              <input
+                type="text"
+                value={branch}
+                onChange={(e) => setBranch(e.target.value)}
+                placeholder={t('remote.branchPlaceholder')}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              />
+            </div>
+          )}
           <button
-            onClick={handleAnalyze}
+            onClick={() => handleAnalyze()}
             disabled={analysisMutation.isPending || !repoUrl.trim()}
             className="flex items-center justify-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -217,6 +226,19 @@ export function RemoteAnalysis() {
           </button>
         </div>
 
+        <div className="flex flex-wrap gap-2 mt-3">
+          {QUICK_PACKAGES.map((pkg) => (
+            <button
+              key={pkg}
+              onClick={() => handleAnalyze(pkg)}
+              disabled={analysisMutation.isPending}
+              className="px-3 py-1 text-xs rounded-full border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-primary-50 hover:text-primary-600 hover:border-primary-300 dark:hover:bg-primary-900/20 dark:hover:text-primary-400 dark:hover:border-primary-700 transition-colors disabled:opacity-50"
+            >
+              {pkg}
+            </button>
+          ))}
+        </div>
+
         {analysisMutation.isError && (
           <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg text-sm">
             {analysisMutation.error?.message || t('remote.error')}
@@ -225,6 +247,50 @@ export function RemoteAnalysis() {
       </div>
 
       {result && (
+        <div className="space-y-4">
+          {/* npm 包元信息 */}
+          {isNpmSource && result.packageMeta && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Package size={18} className="text-primary-500" />
+                <h3 className="font-semibold text-gray-800 dark:text-gray-100">
+                  {result.packageMeta.name}
+                  <span className="ml-2 text-sm font-normal text-gray-500">v{result.packageMeta.version}</span>
+                </h3>
+              </div>
+              {result.packageMeta.description && (
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">{result.packageMeta.description}</p>
+              )}
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
+                {result.packageMeta.author && (
+                  <span>{t('remote.npmAuthor')}: {result.packageMeta.author}</span>
+                )}
+                {result.packageMeta.license && (
+                  <span>{t('remote.npmLicense')}: {result.packageMeta.license}</span>
+                )}
+                {result.packageMeta.homepage && (
+                  <a
+                    href={result.packageMeta.homepage}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primary-500 hover:underline inline-flex items-center gap-1"
+                  >
+                    Homepage <ExternalLink size={10} />
+                  </a>
+                )}
+              </div>
+              {result.packageMeta.keywords && result.packageMeta.keywords.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {result.packageMeta.keywords.slice(0, 10).map((kw) => (
+                    <span key={kw} className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded">
+                      {kw}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* 包列表 */}
           <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
@@ -233,7 +299,7 @@ export function RemoteAnalysis() {
               <h3 className="font-medium text-gray-800 dark:text-gray-100">
                 {t('remote.packages')} ({result.packages.length})
               </h3>
-              {result.lockFileType && (
+              {!isNpmSource && result.lockFileType && (
                 <span className="text-xs px-2 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">
                   {result.lockFileType}
                 </span>
@@ -380,6 +446,7 @@ export function RemoteAnalysis() {
               </div>
             )}
           </div>
+        </div>
         </div>
       )}
 
