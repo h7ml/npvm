@@ -26,7 +26,7 @@
     "@npvm/shared": "workspace:*",
     "execa": "^9.5.0",
     "fastify": "^5.2.0",
-    "which": "^5.0.0"
+    "which": "^6.0.0"
   },
   "devDependencies": {
     "@types/which": "^3.0.0",
