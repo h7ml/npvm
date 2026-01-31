@@ -1,6 +1,6 @@
 {
   "name": "npvm",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Node Package Manager Visual Platform - A modern web UI for managing npm/yarn/pnpm/bun packages",
   "private": true,
   "type": "module",
