@@ -5,7 +5,7 @@ import { Card, Badge } from '../components/ui';
 import { clsx } from 'clsx';
 import changelogData from '../data/changelog.json';
 
-type ChangeType = 'feature' | 'fix' | 'improve' | 'breaking';
+type ChangeType = 'feature' | 'fix' | 'improvement' | 'breaking';
 
 interface ChangeItem {
   type: ChangeType;
@@ -21,7 +21,7 @@ interface VersionEntry {
 const changeTypeConfig: Record<ChangeType, { icon: typeof Sparkles; color: string }> = {
   feature: { icon: Sparkles, color: 'text-green-600 bg-green-100 dark:bg-green-900/30' },
   fix: { icon: Bug, color: 'text-red-600 bg-red-100 dark:bg-red-900/30' },
-  improve: { icon: Wrench, color: 'text-blue-600 bg-blue-100 dark:bg-blue-900/30' },
+  improvement: { icon: Wrench, color: 'text-blue-600 bg-blue-100 dark:bg-blue-900/30' },
   breaking: { icon: AlertTriangle, color: 'text-orange-600 bg-orange-100 dark:bg-orange-900/30' },
 };
 
